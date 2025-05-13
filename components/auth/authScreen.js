@@ -47,7 +47,7 @@ const AuthScreen = ({ navigation }) => {
           [email, password]
         );
         
-        if (result.rows.length > 0) {
+        if (result.length > 0) {
           navigation.navigate('Home', { userId: result.rows.item(0).id });
         } else {
           Alert.alert('Authentication Failed', 'Invalid email or password');
@@ -60,7 +60,9 @@ const AuthScreen = ({ navigation }) => {
           [email]
         );
         
-        if (checkResult.rows.length > 0) {
+        console.log(checkResult);
+
+        if (checkResult.length > 0) {
           Alert.alert('Registration Failed', 'Email already exists');
           return;
         }
@@ -70,7 +72,7 @@ const AuthScreen = ({ navigation }) => {
           [email, password]
         );
         
-        navigation.navigate('Home', { userId: insertResult.insertId });
+        navigation.navigate('Home', { userId: insertResult.lastInsertRowId });
       }
     } catch (error) {
       console.error('Database error:', error);

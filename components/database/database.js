@@ -50,10 +50,12 @@ const executeSql = async (query, params = []) => {
     if (!isInitialized) {
       await initDatabase();
     }
-    
-    return await db.withTransactionAsync(async (tx) => {
-      return await tx.execAsync(query, params);
-    });
+
+    if (query.trim().toUpperCase().startsWith('SELECT')) {        
+        return await db.getAllAsync(query, params);      
+      } else {
+        return await db.runAsync(query, params);
+      }
   } catch (error) {
     console.error('SQL execution error:', error);
     throw error;
