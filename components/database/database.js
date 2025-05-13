@@ -14,17 +14,16 @@ const initDatabase = async () => {
     
     // Create tables
     await db.execAsync('PRAGMA journal_mode = WAL');
-    
-    await db.withTransactionAsync(async (tx) => {
-      await tx.execAsync(
+
+    await db.execAsync(
         `CREATE TABLE IF NOT EXISTS users (
           id INTEGER PRIMARY KEY AUTOINCREMENT, 
           email TEXT UNIQUE, 
           password TEXT
         );`
       );
-      
-      await tx.execAsync(
+    
+    await db.execAsync(
         `CREATE TABLE IF NOT EXISTS journals (
           id INTEGER PRIMARY KEY AUTOINCREMENT, 
           userId INTEGER, 
@@ -34,8 +33,7 @@ const initDatabase = async () => {
           category TEXT, 
           FOREIGN KEY(userId) REFERENCES users(id)
         );`
-      );
-    });
+      );    
     
     isInitialized = true;
     console.log('Database initialized successfully');
