@@ -19,6 +19,9 @@ import * as ImagePicker from 'expo-image-picker';
 import { SwipeListView } from 'react-native-swipe-list-view';
 import { executeSql } from '../components/database/database';
 import { Picker } from '@react-native-picker/picker';
+import * as Print from 'expo-print';
+import * as Sharing from 'expo-sharing';
+import * as FileSystem from 'expo-file-system';
 
 const HomeScreen = ({ route }) => {
   // State management
@@ -222,6 +225,109 @@ const HomeScreen = ({ route }) => {
     );
   }
 
+  //Export of data
+  const exportToPDF = async () => {
+  try {
+    let htmlContent = `
+      <html>
+        <head>
+          <style>
+            body { font-family: Arial; padding: 20px; }
+            h1 { color: #333; text-align: center; margin-bottom: 20px; }
+            .journal { 
+              margin-bottom: 20px; 
+              padding: 15px;
+              border: 1px solid #eee;
+              border-radius: 8px;
+              page-break-inside: avoid;
+            }
+            .date { color: #666; font-size: 12px; margin-bottom: 5px; }
+            .category { 
+              display: inline-block;
+              background: #4285f4;
+              color: white;
+              padding: 3px 8px;
+              border-radius: 12px;
+              font-size: 12px;
+              margin-bottom: 10px;
+            }
+            .image-container {
+              margin-top: 10px;
+              text-align: center;
+            }
+            .journal-image {
+              max-width: 200px;
+              max-height: 150px;
+              border-radius: 8px;
+              border: 1px solid #ddd;
+            }
+            .description {
+              margin: 10px 0;
+              line-height: 1.4;
+            }
+          </style>
+        </head>
+        <body>
+          <h1>Food Journal Report</h1>
+    `;
+
+    // Обрабатываем каждую запись
+    for (const item of journals) {
+      // Читаем изображение как base64
+      let imageBase64 = '';
+      if (item.image) {
+        try {
+          const fileContent = await FileSystem.readAsStringAsync(item.image, {
+            encoding: FileSystem.EncodingType.Base64,
+          });
+          imageBase64 = `data:image/jpeg;base64,${fileContent}`;
+        } catch (imageError) {
+          console.warn('Could not load image:', item.image, imageError);
+        }
+      }
+
+      // Добавляем запись в HTML
+      htmlContent += `
+        <div class="journal">
+          <div class="date">${new Date(item.date).toLocaleString()}</div>
+          <div class="category">${item.category}</div>
+          <div class="description">${item.description}</div>
+      `;ф
+
+      // Добавляем изображение, если оно есть
+      if (imageBase64) {
+        htmlContent += `
+          <div class="image-container">
+            <img class="journal-image" src="${imageBase64}" />
+          </div>
+        `;
+      }
+
+      htmlContent += `</div>`; // Закрываем div.journal
+    }
+
+    htmlContent += `</body></html>`;
+
+    // Генерируем PDF
+    const { uri } = await Print.printToFileAsync({
+      html: htmlContent,
+      width: 595,  // A4 width in points (210mm)
+      height: 842, // A4 height in points (297mm)
+    });
+
+    // Открываем диалог для экспорта
+    await Sharing.shareAsync(uri, {
+      mimeType: 'application/pdf',
+      dialogTitle: 'Export Food Journal',
+      UTI: 'com.adobe.pdf',
+    });
+
+  } catch (error) {
+    console.error('PDF export error:', error);
+    Alert.alert('Error', 'Failed to generate PDF');
+  }
+};
+
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -332,7 +438,15 @@ const HomeScreen = ({ route }) => {
 
         {/* Journal List Section */}
         <View style={styles.listContainer}>
-          <Text style={styles.sectionTitle}>Your Food Journals</Text>
+          <View style={styles.headerContainer}>
+            <Text style={styles.sectionTitle}>Your Food Journals</Text>
+            <TouchableOpacity
+            style={styles.exportButton}
+            onPress={exportToPDF}
+            >
+              <Text style={styles.exportButtonText}>Export to PDF</Text>
+            </TouchableOpacity>
+          </View>
 
           <TextInput
           placeholder="Search entries..."
@@ -679,6 +793,19 @@ const styles = StyleSheet.create({
     fontSize: 16,
     textAlignVertical: 'top',
   },
+  exportButton: {
+  backgroundColor: '#cccccc',
+  paddingVertical: 8,
+  paddingHorizontal: 12,
+  borderRadius: 5,
+  marginLeft: 10,
+},
+  headerContainer: {
+  flexDirection: 'row',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  marginBottom: 15,
+},
 });
 
 export default HomeScreen;

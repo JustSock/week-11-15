@@ -24,7 +24,10 @@
     "react-native-safe-area-context": "^5.4.0",
     "react-native-screens": "^4.10.0",
     "react-native-sqlite-storage": "^6.0.1",
-    "react-native-swipe-list-view": "^3.2.9"
+    "react-native-swipe-list-view": "^3.2.9",
+    "expo-print": "~14.0.3",
+    "expo-sharing": "~13.0.1",
+    "expo-file-system": "~18.0.12"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0"
