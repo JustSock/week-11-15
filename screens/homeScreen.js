@@ -12,7 +12,7 @@ import {
   Platform,
   KeyboardAvoidingView
 } from 'react-native';
-import { Camera } from 'expo-camera';
+import { Camera } from 'react-native-camera';
 import * as ImagePicker from 'expo-image-picker';
 import { SwipeListView } from 'react-native-swipe-list-view';
 import { executeSql } from '../components/database/database';
@@ -229,7 +229,7 @@ const HomeScreen = ({ route }) => {
       {/* Camera Modal */}
       <Modal visible={isCameraOpen} animationType="slide">
         <View style={styles.cameraContainer}>
-          <Camera
+          <Ис
             style={styles.camera}
             ref={(ref) => setCamera(ref)}
             ratio="16:9"

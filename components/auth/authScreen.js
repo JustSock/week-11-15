@@ -46,9 +46,9 @@ const AuthScreen = ({ navigation }) => {
           'SELECT id FROM users WHERE email = ? AND password = ?',
           [email, password]
         );
-        
+        console.log(result);
         if (result.length > 0) {
-          navigation.navigate('Home', { userId: result.rows.item(0).id });
+          navigation.navigate('Home', { userId: result.id });
         } else {
           Alert.alert('Authentication Failed', 'Invalid email or password');
         }

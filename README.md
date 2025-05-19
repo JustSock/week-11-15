@@ -11,3 +11,8 @@
     Ошибка: "[TypeError: Cannot read property 'rows' of null]"
     Причина: execAsync не подразумевает возможность использования параметров
     Решение: Вместо execAsync использовать getAllAsync и runAsync, также проверять длину полученного массива, вместо количества rows
+
+Проблема 3:
+    Ошибка: "Warning: ReferenceError: Property 'Button' doesn't exist"
+    Причина: execAsync не подразумевает возможность использования параметров
+    Решение: Вместо execAsync использовать getAllAsync и runAsync, также проверять длину полученного массива, вместо количества rows
