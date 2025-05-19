@@ -31,6 +31,7 @@ const HomeScreen = ({ route }) => {
   const [category, setCategory] = useState('All');
   const [isCameraOpen, setIsCameraOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
 
   // Categories for filtering
   const categories = ['All', 'Breakfast', 'Lunch', 'Dinner', 'Snacks'];
@@ -195,9 +196,8 @@ const HomeScreen = ({ route }) => {
   };
 
   // Filter journals by category
-  const filteredJournals = category === 'All'
-    ? journals
-    : journals.filter((item) => item.category === category);
+  const filteredJournals = (category === 'All' ? journals : journals.filter(item => item.category === category))
+  .filter(item => item.description.toLowerCase().includes(searchQuery.toLowerCase()));
 
   // Loading state
   if (isLoading) {
@@ -333,6 +333,13 @@ const HomeScreen = ({ route }) => {
         {/* Journal List Section */}
         <View style={styles.listContainer}>
           <Text style={styles.sectionTitle}>Your Food Journals</Text>
+
+          <TextInput
+          placeholder="Search entries..."
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+          style={styles.searchInput}
+          />
 
           {/* Category Filter */}
           <View style={styles.filterContainer}>
@@ -662,6 +669,15 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#666',
     textAlign: 'center',
+  },
+  searchInput: {
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 5,
+    padding: 12,
+    marginBottom: 15,
+    fontSize: 16,
+    textAlignVertical: 'top',
   },
 });
 
