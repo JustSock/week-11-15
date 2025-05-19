@@ -9,7 +9,8 @@ import {
   ActivityIndicator,
   Alert,
   KeyboardAvoidingView,
-  Platform
+  Platform,
+  ScrollView
 } from 'react-native';
 import { executeSql } from '../database/database';
 
@@ -46,9 +47,9 @@ const AuthScreen = ({ navigation }) => {
           'SELECT id FROM users WHERE email = ? AND password = ?',
           [email, password]
         );
-        console.log(result);
+        console.log(result[0].id);
         if (result.length > 0) {
-          navigation.navigate('Home', { userId: result.id });
+          navigation.navigate('Home', { userId: result[0].id });
         } else {
           Alert.alert('Authentication Failed', 'Invalid email or password');
         }
@@ -87,53 +88,55 @@ const AuthScreen = ({ navigation }) => {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       style={styles.container}
     >
-      <View style={styles.innerContainer}>
-        <Text style={styles.title}>{isLogin ? 'Login' : 'Create Account'}</Text>
-        
-        <TextInput
-          placeholder="Email"
-          value={email}
-          onChangeText={setEmail}
-          style={styles.input}
-          keyboardType="email-address"
-          autoCapitalize="none"
-          autoCorrect={false}
-        />
-        
-        <TextInput
-          placeholder="Password"
-          value={password}
-          onChangeText={setPassword}
-          style={styles.input}
-          secureTextEntry
-          autoCapitalize="none"
-        />
-        
-        {isLoading ? (
-          <ActivityIndicator size="large" color="#0000ff" />
-        ) : (
+      <ScrollView>
+        <View style={styles.innerContainer}>
+          <Text style={styles.title}>{isLogin ? 'Login' : 'Create Account'}</Text>
+          
+          <TextInput
+            placeholder="Email"
+            value={email}
+            onChangeText={setEmail}
+            style={styles.input}
+            keyboardType="email-address"
+            autoCapitalize="none"
+            autoCorrect={false}
+          />
+          
+          <TextInput
+            placeholder="Password"
+            value={password}
+            onChangeText={setPassword}
+            style={styles.input}
+            secureTextEntry
+            autoCapitalize="none"
+          />
+          
+          {isLoading ? (
+            <ActivityIndicator size="large" color="#0000ff" />
+          ) : (
+            <TouchableOpacity
+              style={styles.authButton}
+              onPress={handleAuth}
+              disabled={isLoading}
+            >
+              <Text style={styles.authButtonText}>
+                {isLogin ? 'Login' : 'Register'}
+              </Text>
+            </TouchableOpacity>
+          )}
+          
           <TouchableOpacity
-            style={styles.authButton}
-            onPress={handleAuth}
-            disabled={isLoading}
+            style={styles.switchButton}
+            onPress={() => setIsLogin(!isLogin)}
           >
-            <Text style={styles.authButtonText}>
-              {isLogin ? 'Login' : 'Register'}
+            <Text style={styles.switchButtonText}>
+              {isLogin 
+                ? 'Need an account? Register' 
+                : 'Already have an account? Login'}
             </Text>
           </TouchableOpacity>
-        )}
-        
-        <TouchableOpacity
-          style={styles.switchButton}
-          onPress={() => setIsLogin(!isLogin)}
-        >
-          <Text style={styles.switchButtonText}>
-            {isLogin 
-              ? 'Need an account? Register' 
-              : 'Already have an account? Login'}
-          </Text>
-        </TouchableOpacity>
-      </View>
+        </View>
+      </ScrollView>
     </KeyboardAvoidingView>
   );
 };
